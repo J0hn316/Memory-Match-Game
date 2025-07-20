@@ -2,7 +2,7 @@ import type { MemoryCard } from '../types/card';
 
 const baseEmojis = ['🐶', '🐱', '🦊', '🐸', '🐵', '🐼', '🦁', '🐷'];
 
-export function createShuffleDeck(): MemoryCard[] {
+export function createShuffledDeck(): MemoryCard[] {
   const pairedEmojis = [...baseEmojis, ...baseEmojis];
 
   const shuffled = pairedEmojis
