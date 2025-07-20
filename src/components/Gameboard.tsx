@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createShuffledDeck } from '../utils/shuffle';
 import type { MemoryCard } from '../types/card';
 import Card from './Card';
@@ -9,6 +9,9 @@ const GameBoard: React.FC = () => {
   const [secondCard, setSecondCard] = useState<MemoryCard | null>(null);
   const [turns, setTurns] = useState(0);
   const [isBusy, setIsBusy] = useState(false);
+  const winRef = useRef<HTMLDivElement>(null);
+
+  const hasWon = cards.length > 0 && cards.every((card) => card.matched);
 
   useEffect(() => {
     setCards(createShuffledDeck());
@@ -38,6 +41,12 @@ const GameBoard: React.FC = () => {
     }
   }, [firstCard, secondCard, cards]);
 
+  useEffect(() => {
+    if (hasWon && winRef.current) {
+      winRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [hasWon]);
+
   const handleCardClick = (card: MemoryCard) => {
     if (isBusy || card.flipped || card.matched || firstCard === card) return;
 
@@ -64,14 +73,26 @@ const GameBoard: React.FC = () => {
   return (
     <div className="text-center mt-8">
       <div className="mb-4">
-        <p className="text-lg font-medium text-gray-700">Turn: {turns}</p>
-        <button
-          onClick={handleReset}
-          className="mt-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-        >
-          Restart Game
-        </button>
+        <p className="text-lg font-medium text-gray-700">Turns: {turns}</p>
+        {hasWon && (
+          <button
+            onClick={handleReset}
+            className="mt-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+          >
+            Restart Game
+          </button>
+        )}
       </div>
+
+      {hasWon && (
+        <div
+          ref={winRef}
+          className="mb-4 p-4 bg-green-100 text-green-800 rounded shadow-md text-xl font-semibold"
+        >
+          🎉 You Win! Great memory!
+        </div>
+      )}
+
       <div className="grid grid-cols-4 gap-4 justify-center max-w-3xl mx-auto">
         {cards.map((card) => (
           <Card
