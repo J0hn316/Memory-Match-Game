@@ -7,17 +7,29 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ card, onClick }) => {
+  const isFlipped = card.flipped || card.matched;
+
   return (
     <button
       onClick={onClick}
-      disabled={card.flipped || card.matched}
-      className={`w-24 h-32 sm:w-28 sm:h-36 flex items-center justify-center text-4xl font-bold rounded shadow-md transition-transform duration-300 ${
-        card.flipped || card.matched
-          ? 'bg-white text-black'
-          : 'bg-blue-600 text-transparent'
-      }`}
+      disabled={isFlipped}
+      className="w-24 h-32 sm:w-28 sm:h-36 perspective"
     >
-      {card.value}
+      <div
+        className={`relative w-full h-full transition-transform duration-500 transform-style-preserve-3d ${
+          isFlipped ? 'rotate-y-180' : ''
+        }`}
+      >
+        {/* Back of the card (blue side — default view) */}
+        <div className="absolute inset-0 flex items-center justify-center bg-blue-600 text-transparent rounded shadow-md backface-hidden">
+          ❓
+        </div>
+
+        {/* Front of the card (emoji face — shown when flipped) */}
+        <div className="absolute inset-0 flex items-center justify-center text-4xl bg-white text-black rounded shadow-md backface-hidden rotate-y-180">
+          {card.value}
+        </div>
+      </div>
     </button>
   );
 };
